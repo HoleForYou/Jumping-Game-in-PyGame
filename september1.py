@@ -63,12 +63,15 @@ class player(py.sprite.Sprite):
 
     def update(self):
         hits = py.sprite.spritecollide(p1, platforms, False)
-        if hits:
-            self.pos.y = hits[0].rect.top + 1
-            self.vel.y = 0
+        if p1.vel.y > 0:
+            if hits:
+                self.pos.y = hits[0].rect.top + 1
+                self.vel.y = 0
 
     def jump(self):
-        self.vel.y = -15
+        hits = py.sprite.spritecollide(self, platforms, False)
+        if hits:
+            self.vel.y = -15
 
 
 class platform(py.sprite.Sprite):
