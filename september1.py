@@ -99,12 +99,28 @@ class platform(py.sprite.Sprite):
 # Randomly generating platforms on screen to make the game infiniteb
 
 
+def check(platform, groupies):
+    if py.sprite.spritecollideany(platform, groupies):
+        return True
+    else:
+        for entity in groupies:
+            if entity == platform:
+                continue
+            if (abs(platform.rect.top - entity.rect.bottom) < 50) and (abs(platform.rect.bottom - entity.rect.top) < 50):
+                return True
+            C = False
+
+
 def plat_gen():
-    while len(platforms) < 7:
-        plat_gen_width = random.randrange(50, width)
+    while len(platforms) < 6:
+        plat_gen_width = random.randrange(50, 100)
         p = platform()
-        p.rect.center = (random.randrange(0, plat_gen_width),
-                         random.randrange(-50, 0))
+        C = True
+        while C:
+            p = platform()
+            p.rect.center = (random.randrange(0, width - plat_gen_width),
+                             random.randrange(-50, 0))
+            C = check(p, platforms)
         platforms.add(p)
         all_sprites.add(p)
 
@@ -128,7 +144,11 @@ platforms.add(pt1)
 
 # Random platform generating code in the beginning of the game
 for x in range(random.randint(5, 6)):
+    C = True
     pl = platform()
+    while C:
+        pl = platform()
+        C = check(pl, platforms)
     platforms.add(pl)
     all_sprites.add(pl)
     print("hello pygame")
