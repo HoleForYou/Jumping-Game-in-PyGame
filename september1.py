@@ -43,6 +43,7 @@ class player(py.sprite.Sprite):
         self.pos = vec((10, 385))
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
+        self.jumping = False
 
     def move(self):
         self.acc = vec(0, 0.5)
@@ -64,16 +65,24 @@ class player(py.sprite.Sprite):
         self.rect.midbottom = self.pos
 
     def update(self):
-        hits = py.sprite.spritecollide(p1, platforms, False)
-        if p1.vel.y > 0:
+        hits = py.sprite.spritecollide(self, platforms, False)
+        if self.vel.y > 0:
             if hits:
-                self.pos.y = hits[0].rect.top + 1
-                self.vel.y = 0
+                if self.pos.y < hits[0].rect.bottom:
+                    self.pos.y = hits[0].rect.top + 1
+                    self.vel.y = 0
+                    self.jumping = False
 
     def jump(self):
         hits = py.sprite.spritecollide(self, platforms, False)
-        if hits:
+        if hits and not self.jumping:
+            self.jumping = True
             self.vel.y = -15
+
+    def cancel_jump(self):
+        if self.jumping:
+            if self.vel.y < -3:
+                self.vel.y = -3
 
 
 class platform(py.sprite.Sprite):
@@ -92,7 +101,7 @@ class platform(py.sprite.Sprite):
 
 def plat_gen():
     while len(platforms) < 7:
-        plat_gen_width = random.randrange(50, 500)
+        plat_gen_width = random.randrange(50, width)
         p = platform()
         p.rect.center = (random.randrange(0, plat_gen_width),
                          random.randrange(-50, 0))
@@ -140,6 +149,9 @@ while running:
         if event.type == py.KEYDOWN:
             if event.key == py.K_SPACE:
                 p1.jump()
+        if event.type == py.KEYUP:
+            if event.key == py.K_SPACE:
+                p1.cancel_jump()
 
     # Infinite scrolling code
     if p1.rect.top <= height / 3:
