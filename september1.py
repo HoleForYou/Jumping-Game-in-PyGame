@@ -8,6 +8,8 @@ from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
     QUIT,
+    K_SPACE,
+    KEYUP,
 )
 import sys
 import random
